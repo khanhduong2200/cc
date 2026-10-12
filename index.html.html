@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Đám Cưới</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        /* Phong bì */
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+        
+        .envelope {
+            position: relative;
+            width: 450px;
+            height: 300px;
+            background: #e91e63;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-radius: 0 0 10px 10px;
+        }
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            border-left: 225px solid transparent;
+            border-right: 225px solid transparent;
+            border-top: 150px solid #d81b60;
+            transform-origin: top;
+            transition: transform 0.4s ease 0.4s;
+        }
+        .envelope::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 225px solid rgba(255,255,255,0.1);
+            border-right: 225px solid rgba(255,255,255,0.1);
+            border-bottom: 150px solid rgba(255,255,255,0.2);
+            border-radius: 0 0 10px 10px;
+            z-index: 3;
+        }
+        
+        /* Cánh thư mở lên */
+        .envelope-wrapper.open .envelope::before {
+            transform: rotateX(180deg);
+            z-index: 0;
+            transition: transform 0.4s ease, z-index 0.05s ease 0.2s;
+        }
+
+        /* Nút trái tim khóa */
+        .heart-btn {
+            position: absolute;
+            top: 130px;
+            left: calc(50% - 25px);
+            width: 50px;
+            height: 50px;
+            background: #ffeb3b;
+            z-index: 10;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, opacity 0.3s ease 0.2s;
+        }
+        .heart-btn::before, .heart-btn::after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .heart-btn::before { top: -25px; left: 0; }
+        .heart-btn::after { left: -25px; top: 0; }
+        .heart-btn span {
+            position: absolute;
+            transform: rotate(-45deg);
+            display: block;
+            width: 100%;
+            text-align: center;
+            line-height: 50px;
+            font-weight: bold;
+            color: #d81b60;
+            font-size: 14px;
+        }
+
+        .envelope-wrapper.open .heart-btn {
+            transform: rotate(45deg) scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Thiệp mời bên trong */
+        .card {
+            position: absolute;
+            bottom: 10px;
+            left: 25px;
+            width: 400px;
+            height: 280px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.6s ease 0.4s, height 0.6s ease 0.4s;
+            z-index: 1;
+            border: 2px dashed #f48fb1;
+            opacity: 0.9;
+        }
+        
+        .envelope-wrapper.open .card {
+            transform: translateY(-180px);
+            height: 420px;
+            z-index: 5;
+            opacity: 1;
+        }
+
+        /* Nội dung thiệp */
+        .title {
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #d81b60;
+            margin-bottom: 10px;
+            font-weight: bold;
+            transform: translateY(120px);
+        }
+        .names {
+            font-size: 26px;
+            color: #ad1457;
+            margin: 15px 0;
+            font-family: Georgia, serif;
+            transform: translateY(30px);
+        }
+        .heart-icon {
+            color: #e91e63;
+            margin: 0 5px;
+        }
+        .message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .date-box {
+            background: #fce4ec;
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #c2185b;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Hiển thị nội dung khi thiệp đẩy lên */
+        .envelope-wrapper.open .message,
+        .envelope-wrapper.open .date-box {
+            display: block;
+            animation: fadeIn 0.5s ease forwards 0.8s;
+            opacity: 0;
+            margin-top: 50px;
+            transform: translateY(25px);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Hiệu ứng pháo hoa hoa hồng rơi */
+        .petal {
+            position: absolute;
+            background: #ff80ab;
+            border-radius: 150% 0 150% 150%;
+            pointer-events: none;
+            z-index: 100;
+            animation: fadeFall linear forwards;
+        }
+        @keyframes fadeFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope"></div>
+        <div class="heart-btn" id="openBtn"><span>MỞ</span></div>
+        
+        <div class="card">
+            <div class="title">SAVE THE DATE • TRÂN TRỌNG KÍNH MỜI</div>
+            <div class="names">
+                <span>Văn Thuận</span>
+                <span class="heart-icon">❤</span>
+                <span>Thu Cuối</span>
+            </div>
+            <p class="message">
+                "Hạnh phúc lớn nhất trên đời là tin tưởng, chúng ta đã nghĩ là tin đúng người."
+                <br><br>
+                Nhưng đâu ai biết rằng đây là trò  đùa dumamay!
+            </p>
+            <div class="date-box">
+                📅 Chủ Nhật, 20/12/2026 <br>
+                ⏰ Lúc 10:00 ây em <br>
+                📍 TTTM tp Cô cóoc, Cao Bằng
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const wrapper = document.getElementById('envelopeWrapper');
+        const openBtn = document.getElementById('openBtn');
+
+        openBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài
+            wrapper.classList.add('open');
+            createPetals();
+        });
+
+        function createPetals() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const petal = document.createElement('div');
+                    petal.classList.add('petal');
+                    
+                    // Tùy biến ngẫu nhiên cho hoa hồng rơi
+                    petal.style.left = Math.random() * 100 + 'vw';
+                    petal.style.width = Math.random() * 15 + 10 + 'px';
+                    petal.style.height = petal.style.width;
+                    petal.style.opacity = Math.random();
+                    petal.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    
+                    document.body.appendChild(petal);
+                    
+                    // Xóa sau khi rơi xong
+                    setTimeout(() => { petal.remove(); }, 5000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
